@@ -96,8 +96,7 @@ class DatabaseConnection:
             for key in data:
                 if key != 'id':
                     cursor.execute(
-                        # "UPDATE " + tableName + " SET " + key + "=? WHERE id = ?", (data[key], uniqueId))
-                        "UPDATE " + tableName + " SET " + key + "=? WHERE id = ?", (data[key], uniqueId))
+                        "UPDATE " + tableName + " SET " + key + "="+ data[key]+ " WHERE id =" + uniqueId)
                     connection.commit()
                     self.connection.close
                     return print(True)
