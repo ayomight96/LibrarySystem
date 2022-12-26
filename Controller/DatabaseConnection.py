@@ -116,7 +116,7 @@ class DatabaseConnection:
             queryString = ""
             queryVaraibles = []
             for key in searchParameter:
-                queryString += key + " = ? "
+                queryString += key + " = :" + key
                 queryVaraibles[counter] = searchParameter[key]
                 if counter < dictCount:
                     queryString += "AND "
