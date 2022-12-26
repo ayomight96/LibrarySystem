@@ -86,19 +86,19 @@ def signUp():
                           width=20, font=('arial', 12))
     userTypeLabel.place(x=120, y=330)
     dropDownlist.place(x=300, y=330)
-    if fullNameEntry.get() and userNameEntry.get() and passwordEntry.get() and confirmPasswordEntry.get() and (passwordEntry.get() == confirmPasswordEntry.get()):
+    # if fullNameEntry.get() and userNameEntry.get() and passwordEntry.get() and confirmPasswordEntry.get() and (passwordEntry.get() == confirmPasswordEntry.get()):
         
-    signUpDetails = {
-        'fullName': fullNameEntry.get(),
-        'userName': userNameEntry.get(),
-        'password': passwordEntry.get(),
-        'confirmPassword': confirmPasswordEntry.get()
-    }
+    # signUpDetails = {
+    #     'fullName': fullNameEntry.get(),
+    #     'userName': userNameEntry.get(),
+    #     'password': passwordEntry.get(),
+    #     'confirmPassword': confirmPasswordEntry.get()
+    # }
     tk.Button(signUpWindow, text='Submit', width=20, height=1, bg='white',
-              fg='black', command=lambda: verifySignUpDetails(signUpDetails)).place(x=230, y=380)
+              fg='black').place(x=230, y=380)
 
 
-def verifySignUpDetails(signUpDetails):
+# def verifySignUpDetails(signUpDetails):
 
 
     # Sign Up Button

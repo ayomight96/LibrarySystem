@@ -96,9 +96,9 @@ class DatabaseConnection:
             for key in data:
                 if key != 'id':
                     cursor.execute(
-                        "UPDATE " + tableName + " SET " + key + "="+ data[key]+ " WHERE id =" + uniqueId)
+                        "UPDATE " + tableName + " SET " + key + "=%s" + " WHERE id =%s", (data[key], uniqueId))
                     connection.commit()
-                    self.connection.close
+                    self.connection.close()
                     return print(True)
         else:
             raise Exception("Invalid SearchParameters")
