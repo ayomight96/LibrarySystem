@@ -1,40 +1,15 @@
-# import sys
-
-# sys.path.insert(1, '/Users/mac/Documents/PYTHON FOLDER/LibrarySystem')
-
-# from Model.Book import Book
-
-
-# book = Book(
-#     1,
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy',
-#     'boy'
-# )
-
-# book.setLendingDateTest('12/8/2022')
-
-# print(book.toString(book.lendingDate))
-# # print(book.toString(book.lendingDate))
-
-# print (book.lendingAge())
-
-import tkinter as tk
-from tkinter.ttk import *
 from PIL import Image, ImageTk
+from tkinter.ttk import *
+import tkinter as tk
+import sys
+import tkinter.messagebox
+
+sys.path.insert(1, '/Users/mac/Documents/PYTHON FOLDER/LibrarySystem')
+from Controller.GuiFunctions import GuiFunctions
+
 
 root = tk.Tk()
-
+userData = []
 canvas = tk.Canvas(root, width=600, height=300)
 canvas.grid(columnspan=3, rowspan=7)
 
@@ -53,6 +28,7 @@ instructions.grid(columnspan=3, column=0, row=2)
 def signUp():
     signUpWindow = tk.Toplevel(root)
     signUpWindow.geometry('600x600')
+    signUpWindow.resizable(False, False)
     signUpWindow.title('Sign Up Form')
     signUpFormLabel = tk.Label(signUpWindow, text='Sign Up form',
                                width=20, font=('bold', 20))
@@ -86,22 +62,90 @@ def signUp():
                           width=20, font=('arial', 12))
     userTypeLabel.place(x=120, y=330)
     dropDownlist.place(x=300, y=330)
-    # if fullNameEntry.get() and userNameEntry.get() and passwordEntry.get() and confirmPasswordEntry.get() and (passwordEntry.get() == confirmPasswordEntry.get()):
-        
-    # signUpDetails = {
-    #     'fullName': fullNameEntry.get(),
-    #     'userName': userNameEntry.get(),
-    #     'password': passwordEntry.get(),
-    #     'confirmPassword': confirmPasswordEntry.get()
-    # }
+    guiFunctions = GuiFunctions()
     tk.Button(signUpWindow, text='Submit', width=20, height=1, bg='white',
-              fg='black').place(x=230, y=380)
+              fg='black', command=lambda: guiFunctions.signUpSubmitButton(
+                  userName=str(userNameEntry.get()),
+                  fullName=str(fullNameEntry.get()),
+                  password=str(passwordEntry.get()),
+                  confirmPassword=str(confirmPasswordEntry.get()),
+                  userType='Student'
+              )
+              ).place(x=230, y=380)
 
 
-# def verifySignUpDetails(signUpDetails):
+def setCurrrentLoggedInUser(userName, password):
+    if userName is not None and password is not None:
+        guiFunctions = GuiFunctions()
+        data = guiFunctions.signInSubmitButton(
+            userName=userName,
+            password=password
+        )
+        userData.append(data)
+        tkinter.messagebox.showinfo(
+            "Welcome ", "Welcome " + data['fullName'] + ", The Buttons on this page are now accessible to you!")
+    else:
+        tkinter.messagebox.showinfo('No Entry', 'Fill all fields')
+    # call a new window
+    # destroy current
 
 
-    # Sign Up Button
+def signIn():
+    signInWindow = tk.Toplevel(root)
+    signInWindow.geometry('1000x700')
+    signInWindow.resizable(False, False)
+    signInWindow.title('User Library Iterface')
+    signInFormLabel = tk.Label(signInWindow, text='Sign in to access the Library System',
+                               width=30, font=('bold', 20))
+    signInFormLabel.place(x=-20, y=6)
+    UserNameLabel = tk.Label(
+        signInWindow, text='UserName', width=25, font=('bold', 20))
+    UserNameLabel.place(x=-90, y=60)
+    userNameEntry = tk.Entry(signInWindow)
+    userNameEntry.place(x=150, y=60)
+    passwordLabel = tk.Label(
+        signInWindow, text='Password', width=25, font=('bold', 20))
+    passwordLabel.place(x=-90, y=110)
+    passwordEntry = tk.Entry(signInWindow)
+    passwordEntry.place(x=150, y=110)
+    tk.Button(signInWindow, text='Unlock', width=15, height=1, bg='white',
+              fg='black', activebackground='grey', command=lambda: setCurrrentLoggedInUser(
+                  userName=str(userNameEntry.get()),
+                  password=str(passwordEntry.get())
+              )
+              ).place(x=155, y=150)
+    tk.Button(signInWindow, text='Books Borrowed', width=15, height=1, bg='white',
+              fg='black', activebackground='grey', command=lambda: setCurrrentLoggedInUser(
+                  userName=str(userNameEntry.get()),
+                  password=str(passwordEntry.get())
+              )
+              ).place(x=100, y=280)
+    tk.Button(signInWindow, text='Books Returned', width=15, height=1, bg='white',
+              fg='black', activebackground='grey', command=lambda: setCurrrentLoggedInUser(
+                  userName=str(userNameEntry.get()),
+                  password=str(passwordEntry.get())
+              )
+              ).place(x=100, y=310)
+    tk.Button(signInWindow, text='Books Reserved', width=15, height=1, bg='white',
+              fg='black', activebackground='grey', command=lambda: setCurrrentLoggedInUser(
+                  userName=str(userNameEntry.get()),
+                  password=str(passwordEntry.get())
+              )
+              ).place(x=100, y=340)
+    tk.Button(signInWindow, text='Books Lost', width=15, height=1, bg='white',
+              fg='black', activebackground='grey', command=lambda: setCurrrentLoggedInUser(
+                  userName=str(userNameEntry.get()),
+                  password=str(passwordEntry.get())
+              )
+              ).place(x=100, y=370)
+    infoFrame = Frame(signInWindow, height=200, width= 500)
+    infoFrame.pack_propagate(0)
+    infoFrame.place(x=100, y=410)
+    infoLabel = tk.Label(
+        infoFrame, text='', width=20, font=('bold', 20), background='white')
+    infoLabel.pack(fill='both', expand=1)
+
+# Sign Up Button
 signUpText = tk.StringVar()
 signUpBtn = tk.Button(root, textvariable=signUpText,
                       command=lambda: signUp(), font='Raleway', height=2, width=15)
@@ -111,6 +155,7 @@ signUpBtn.grid(column=1, row=3)
 # Sign In Button
 signInText = tk.StringVar()
 signInBtn = tk.Button(root, textvariable=signInText,
+                      command=lambda: signIn(),
                       font='Raleway', height=2, width=15)
 signInText.set('Sign In')
 signInBtn.grid(column=1, row=4)
@@ -120,3 +165,4 @@ canvas.grid(columnspan=3)
 
 
 root.mainloop()
+

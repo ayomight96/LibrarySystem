@@ -1,68 +1,70 @@
 import sqlite3
+import os
 
 
 class DatabaseConnection:
     def __init__(self) -> any:
-        connection = self.openConnection()
-        cursor = connection.cursor()
-        cursor.execute(
-            """create table User(
-                id text,
-                name text,
-                userName text,
-                password text,
-                userType text,
-                userStation text,
-                fine real
-                )""")
-        cursor.execute(
-            """create table Book(
-                id integer,
-                title text,
-                authors text,
-                averageRating real,
-                isbn integer,
-                isbn13 integer,
-                languageCode text,
-                numberOfPages integer,
-                ratingsCount integer,
-                textReviewsCount integer,
-                publicationDate text,
-                copy integer,
-                copies integer,
-                isReserved integer,
-                isBookRequested integer,
-                isBookAvailable integer,
-                feedback text
-                )""")
-        cursor.execute(
-            """create table BorrowedBooks(
-                id text,
-                bookId integer,
-                dateBorrowed text,
-                dueDate text
-                )""")
-        cursor.execute(
-            """create table ReturnedBooks(
-                id text,
-                bookId integer,
-                dateReturned text
-                )""")
-        cursor.execute(
-            """create table ReservedBooks(
-                id text,
-                bookId integer,
-                dateReserved text
-                )""")
-        cursor.execute(
-            """create table LostBooks(
-                id text,
-                bookId integer,
-                dateLost text
-                )""")
-        connection.commit()
-        self.connection.close
-        print('Database and Tables Succesfully created')
+        if os.path.exists('/Users/mac/Documents/PYTHON FOLDER/LibrarySystem/View/LibrarySystem.db') != True:
+            connection = self.openConnection()
+            cursor = connection.cursor()
+            cursor.execute(
+                """create table User(
+                    id text,
+                    fullName text,
+                    userName text,
+                    password text,
+                    userType text,
+                    userStation text,
+                    fine real
+                    )""")
+            cursor.execute(
+                """create table Book(
+                    id integer,
+                    title text,
+                    authors text,
+                    averageRating real,
+                    isbn integer,
+                    isbn13 integer,
+                    languageCode text,
+                    numberOfPages integer,
+                    ratingsCount integer,
+                    textReviewsCount integer,
+                    publicationDate text,
+                    copy integer,
+                    copies integer,
+                    isReserved integer,
+                    isBookRequested integer,
+                    isBookAvailable integer,
+                    feedback text
+                    )""")
+            cursor.execute(
+                """create table BorrowedBooks(
+                    id text,
+                    bookId integer,
+                    dateBorrowed text,
+                    dueDate text
+                    )""")
+            cursor.execute(
+                """create table ReturnedBooks(
+                    id text,
+                    bookId integer,
+                    dateReturned text
+                    )""")
+            cursor.execute(
+                """create table ReservedBooks(
+                    id text,
+                    bookId integer,
+                    dateReserved text
+                    )""")
+            cursor.execute(
+                """create table LostBooks(
+                    id text,
+                    bookId integer,
+                    dateLost text
+                    )""")
+            connection.commit()
+            self.connection.close
+            print('Database and Tables Succesfully created')
 
     def openConnection(self):
         connection = sqlite3.connect("LibrarySystem.db")
@@ -81,10 +83,9 @@ class DatabaseConnection:
                 cursor.execute(
                     "insert into " + tableName + " (" + key + ")values (?)", (data[key],))
                 connection.commit()
-                self.closeConnection()
-                return True
             else:
                 self.update(tableName, data[uniqueId], data)
+        self.closeConnection()
 
     def update(self, tableName: str, uniqueId: any, data: dict) -> bool:
         connection = self.openConnection()
@@ -96,14 +97,52 @@ class DatabaseConnection:
             for key in data:
                 if key != 'id':
                     cursor.execute(
-                        "UPDATE " + tableName + " SET " + key + "=%s" + " WHERE id =%s", (data[key], uniqueId))
+                        "UPDATE " + tableName + " SET " + key + "=?" + " WHERE id =?", (data[key], uniqueId))
                     connection.commit()
-                    self.connection.close()
-                    return print(True)
         else:
             raise Exception("Invalid SearchParameters")
+        self.connection.close()
 
-# remeber to put a limit to the search parameters passed
+    def delete(self, tableName: str, searchParameters: dict) -> bool:
+        connection = self.openConnection()
+        cursor = connection.cursor()
+        dictCount = len(searchParameters)
+        if dictCount > 3:
+            raise Exception("Invalid SearchParameters")
+        counter = 1
+        queryString = ""
+        queryVariables = []
+        for key in searchParameters:
+            queryString += key + " = ?"
+            queryVariables.append(searchParameters[key])
+            if counter < dictCount:
+                queryString += " AND "
+                counter += 1
+        fullQueryString = "DELETE FROM " + tableName + " WHERE " + queryString
+        match dictCount:
+            case 1:
+                cursor.execute(fullQueryString,
+                               (queryVariables[0],))
+            case 2:
+                cursor.execute(fullQueryString,
+                               (queryVariables[0], queryVariables[1]))
+            case 3:
+                cursor.execute(
+                    fullQueryString, (queryVariables[0], queryVariables[1], queryVariables[2]))
+        connection.commit()
+        self.connection.close()
+
+    def retrieveAll(self, tableName: str):
+        data = []
+        counter = 0
+        connection = self.openConnection()
+        cursor = connection.cursor()
+        for row in cursor.execute("select * from " + tableName):
+            data.append(row)
+            counter += 1
+        self.closeConnection()
+        return data
+
     def retrieve(self, tableName: str, searchParameter: any, searchParameterValue=None):
         connection = self.openConnection()
         cursor = connection.cursor()
@@ -111,20 +150,20 @@ class DatabaseConnection:
             dictCount = len(searchParameter)
             if dictCount < 2 or dictCount > 4:
                 raise Exception("Invalid SearchParameters")
-            counter = 0
+            counter = 1
             queryString = ""
-            queryVaraibles = []
+            queryVariables = []
             for key in searchParameter:
                 queryString += key + " = :" + key
-                queryVaraibles[counter] = searchParameter[key]
+                queryVariables.append(searchParameter[key])
                 if counter < dictCount:
-                    queryString += "AND "
-                counter += 1
+                    queryString += " AND "
+                    counter += 1
             fullQueryString = "SELECT * FROM " + tableName + " WHERE " + queryString
             match dictCount:
                 case 2:
                     cursor.execute(fullQueryString,
-                                   (searchParameter[0], searchParameter[1]))
+                                   (queryVariables[0], queryVariables[1]))
                     data = cursor.fetchall()
                     if len(data) != 0:
                         return data
@@ -132,7 +171,7 @@ class DatabaseConnection:
                         return False
                 case 3:
                     cursor.execute(
-                        fullQueryString, (searchParameter[0], searchParameter[1], searchParameter[2]))
+                        fullQueryString, (queryVariables[0], queryVariables[1], queryVariables[2]))
                     data = cursor.fetchall()
                     if len(data) != 0:
                         return data
@@ -140,7 +179,7 @@ class DatabaseConnection:
                         return False
                 case 4:
                     cursor.execute(
-                        fullQueryString, (searchParameter[0], searchParameter[1], searchParameter[2], searchParameter[3]))
+                        fullQueryString, (queryVariables[0], queryVariables[1], queryVariables[2], queryVariables[3]))
                     data = cursor.fetchall()
                     if len(data) != 0:
                         return data
@@ -149,21 +188,9 @@ class DatabaseConnection:
         else:
             cursor.execute(
                 "SELECT * FROM " + tableName + " WHERE " + searchParameter + " = ?", (searchParameterValue,))
+            data = cursor.fetchall()
+            if len(data) != 0:
+                return data
+            else:
+                return False
         self.closeConnection()
-
-
-databaseConnection = DatabaseConnection()
-databaseConnection.insert(
-    "BorrowedBooks", {
-        "id": "oop1235",
-        "bookId": 1,
-        "dueDate": "26/12/2022"
-    }
-)
-list = databaseConnection.retrieve(
-    "BorrowedBooks",
-    "id",
-    "oop1235"
-)
-
-print(list)
