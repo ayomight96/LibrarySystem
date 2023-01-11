@@ -66,15 +66,22 @@ class DatabaseConnection:
             self.connection.close
             print('Database and Tables Succesfully created')
 
+    #Opens connection to the Database
+    @classmethod        
     def openConnection(self):
         connection = sqlite3.connect("LibrarySystem.db")
         self.connection = connection
         return connection
 
+    #Closes connection to the Database
+    @classmethod
     def closeConnection(self):
         self.connection.close()
 
-    def insert(self, tableName: str, data: dict) -> bool:
+    #inserts data into tables
+    #takes tableName:str and data:dict as Parameters returns None 
+    @classmethod
+    def insert(self, tableName: str, data: dict):
         connection = self.openConnection()
         cursor = connection.cursor()
         for key in data:
@@ -87,7 +94,10 @@ class DatabaseConnection:
                 self.update(tableName, data[uniqueId], data)
         self.closeConnection()
 
-    def update(self, tableName: str, uniqueId: any, data: dict) -> bool:
+    #Updates data in tables
+    #takes tableName:str, uniqueId:any and data:dict as Parameters returns None 
+    @classmethod
+    def update(self, tableName: str, uniqueId: any, data: dict):
         connection = self.openConnection()
         cursor = connection.cursor()
         cursor.execute(
@@ -103,6 +113,9 @@ class DatabaseConnection:
             raise Exception("Invalid SearchParameters")
         self.connection.close()
 
+    #Deletes data in tables
+    #takes tableName:str and searchParameters:dict as Parameters returns None 
+    @classmethod
     def delete(self, tableName: str, searchParameters: dict) -> bool:
         connection = self.openConnection()
         cursor = connection.cursor()
@@ -132,6 +145,8 @@ class DatabaseConnection:
         connection.commit()
         self.connection.close()
 
+    #Retrieves all data in tables
+    @classmethod
     def retrieveAll(self, tableName: str):
         data = []
         counter = 0
@@ -143,6 +158,8 @@ class DatabaseConnection:
         self.closeConnection()
         return data
 
+    #Retrieves all data in tables that meet specific criteria
+    @classmethod
     def retrieve(self, tableName: str, searchParameter: any, searchParameterValue=None):
         connection = self.openConnection()
         cursor = connection.cursor()

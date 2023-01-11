@@ -7,6 +7,7 @@ from Controller.DatabaseConnection import DatabaseConnection
 
 class GuiFunctions:
 
+    @classmethod
     def signUpSubmitButton(
         self,
             fullName: str,
@@ -36,6 +37,7 @@ class GuiFunctions:
             tkinter.messagebox.showinfo(
                 "Invalid Entry", "Fields cannot be empty")
 
+    @classmethod
     def signInSubmitButton(
         self,
             userName: str,
@@ -49,6 +51,7 @@ class GuiFunctions:
             tkinter.messagebox.showinfo(
                 "Invalid Sign in", "Password or Username incorrect")
 
+    @classmethod
     def verifyIfUserExist(
         self,
             userName: str,
@@ -65,6 +68,7 @@ class GuiFunctions:
         else:
             return status
 
+    @classmethod
     def instantiateConnection(
             self):
         databaseConnection = DatabaseConnection()
